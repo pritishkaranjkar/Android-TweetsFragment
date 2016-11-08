@@ -1,4 +1,4 @@
-package com.codepath.apps.twitter.mysimpletweets;
+package com.codepath.apps.twitter.mysimpletweets.utils;
 
 /**
  * Created by kapritish on 10/30/16.

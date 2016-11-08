@@ -1,4 +1,4 @@
-package com.codepath.apps.twitter.mysimpletweets.views;
+package com.codepath.apps.twitter.mysimpletweets.utils;
 
 /**
  * Created by kapritish on 10/30/16.
@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.widget.TextView;
 
 public class LinkifiedTextView extends TextView {
-
     public LinkifiedTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

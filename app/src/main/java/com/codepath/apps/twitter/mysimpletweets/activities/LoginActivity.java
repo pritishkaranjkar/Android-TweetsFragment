@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.View;
 
 import com.codepath.apps.twitter.mysimpletweets.R;
-import com.codepath.apps.twitter.mysimpletweets.TwitterClient;
+import com.codepath.apps.twitter.mysimpletweets.utils.TwitterClient;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {

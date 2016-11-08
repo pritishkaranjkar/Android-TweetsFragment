@@ -3,93 +3,66 @@ package com.codepath.apps.twitter.mysimpletweets.models;
 /**
  * Created by kapritish on 10/30/16.
  */
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Tweet {
-    private Long id;
-    private String text;
-    @JsonProperty("created_at")
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class Tweet  implements Serializable {
+    private String body;
+    private long uid; // unique ID for the tweet
+    private User user; // store embedded user object
     private String createdAt;
-    private TwitterUser user;
-    @JsonProperty("retweet_count")
-    private int retweetCount;
-    @JsonProperty("favorite_count")
-    private int favoritesCount;
-    private boolean retweeted;
-    private boolean favorited;
-    private Entities entities;
 
-    public Long getId() {
-        return id;
+    public User getUser() {
+        return user;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getBody() {
+        return body;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public long getUid() {
+        return uid;
     }
 
     public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    // deserialize the JSON
+    public static Tweet fromJSON(JSONObject jsonObject) {
+        Tweet tweet = new Tweet();
+        // extract JSON values
+        try {
+            tweet.body = jsonObject.getString("text");
+            tweet.uid = jsonObject.getLong("id");
+            tweet.createdAt = jsonObject.getString("created_at");
+            tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return tweet;
     }
 
-    public TwitterUser getUser() {
-        return user;
-    }
+    public static ArrayList<Tweet> fromJsonArray(JSONArray jsonArray) {
+        ArrayList<Tweet> tweets = new ArrayList<>();
+        // iterate the JsonArray and create tweets
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject tweetJson = jsonArray.getJSONObject(i);
+                Tweet tweet = Tweet.fromJSON(tweetJson);
+                if (tweet != null) {
+                    tweets.add(tweet);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                continue;
+            }
+        }
 
-    public void setUser(TwitterUser user) {
-        this.user = user;
-    }
-
-    public int getRetweetCount() {
-        return retweetCount;
-    }
-
-    public void setRetweetCount(int retweetCount) {
-        this.retweetCount = retweetCount;
-    }
-
-    public int getFavoritesCount() {
-        return favoritesCount;
-    }
-
-    public void setFavoritesCount(int favoritesCount) {
-        this.favoritesCount = favoritesCount;
-    }
-
-    public boolean isRetweeted() {
-        return retweeted;
-    }
-
-    public void setRetweeted(boolean retweeted) {
-        this.retweeted = retweeted;
-    }
-
-    public boolean isFavorited() {
-        return favorited;
-    }
-
-    public void setFavorited(boolean favorited) {
-        this.favorited = favorited;
-    }
-
-    public Entities getEntities() {
-        return entities;
-    }
-
-    public void setEntities(Entities entities) {
-        this.entities = entities;
+        return tweets;
     }
 }

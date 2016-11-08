@@ -1,96 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="32dp"
-    android:paddingBottom="32dp">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#FFFFFF" >
 
     <com.makeramen.roundedimageview.RoundedImageView
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/ivUserPhoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minWidth="50dp"
-        android:minHeight="50dp"
-        android:scaleType="fitCenter"
-        app:riv_corner_radius="5dip"
-        app:riv_mutate_background="true"
-        app:riv_tile_mode="repeat"
-        app:riv_oval="false"
+        android:id="@+id/ivMyProfileImage"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginRight="16dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/user_name"
-        android:id="@+id/tvUserName"
-        android:textColor="#DD000000"
-        android:textSize="16sp"
-        android:layout_alignTop="@+id/ivUserPhoto"
-        android:layout_toRightOf="@+id/ivUserPhoto"
-        android:layout_toEndOf="@+id/ivUserPhoto"
-        android:layout_marginRight="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/user_screen_name"
-        android:id="@+id/tvUserScreenName"
-        android:layout_above="@+id/tvTweetText"
-        android:layout_toRightOf="@+id/tvUserName"
-        android:layout_toEndOf="@+id/tvUserName" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/created_at_relative"
-        android:id="@+id/tvCreatedAt"
-        android:gravity="right"
-        android:layout_alignTop="@+id/tvUserScreenName"
-        android:layout_toRightOf="@+id/tvUserScreenName"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <com.codepath.apps.twitter.mysimpletweets.views.LinkifiedTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tweet_text"
-        android:autoLink="all"
-        android:id="@+id/tvTweetText"
-        android:layout_below="@+id/tvUserName"
-        android:layout_toRightOf="@+id/ivUserPhoto"
-        android:layout_alignRight="@+id/tvCreatedAt"
-        android:layout_alignEnd="@+id/tvCreatedAt" />
-
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivPhoto"
+        android:layout_margin="12dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:scaleType="fitCenter"
-        app:riv_corner_radius="5dip"
-        app:riv_mutate_background="true"
-        app:riv_tile_mode="repeat"
-        app:riv_oval="false"
-        android:visibility="invisible"
-        android:layout_below="@+id/tvTweetText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"/>
+        app:riv_corner_radius="4dip"
+        app:riv_oval="false" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/tweet_id"
-        android:id="@+id/tvTweetId"
-        android:visibility="invisible"
+        android:text="UserName"
+        android:id="@+id/tvUserName"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="7dp"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="15sp"
+        android:textColor="#000000"
+        android:layout_toRightOf="@+id/ivMyProfileImage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ScreenName"
+        android:id="@+id/tvScreenName"
+        android:layout_marginTop="7dp"
+        android:layout_alignParentTop="true"
+        android:fontFamily="sans-serif-light"
+        android:layout_toRightOf="@+id/tvUserName" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time"
+        android:id="@+id/tvRelativeTIme"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="7dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true" />
+
+    <com.codepath.apps.twitter.mysimpletweets.utils.LinkifiedTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/tvBody"
+        android:textColor="#2C3236"
+        android:autoLink="all"
+        android:linksClickable="true"
+        android:textColorLink="#1E97E0"
+        android:fontFamily="sans-serif-light"
+        android:textSize="15sp"
+        android:lineSpacingMultiplier="1.1"
+        android:layout_below="@id/tvUserName"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_toRightOf="@+id/ivMyProfileImage" />
+
+    <View
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:minHeight="1px"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:background="#E1E8ED" />
 
 </RelativeLayout>

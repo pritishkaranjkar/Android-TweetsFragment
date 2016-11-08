@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MySimpleTweets</string>
+    <string name="app_name">TweetsFragment</string>
     <string name="login_label">Connect to Twitter</string>
     <string name="title_activity_timeline">My Timeline</string>
     <string name="title_activity_tweet_details">MyTweet</string>
@@ -14,4 +14,8 @@
     <string name="characters_left">140</string>
     <string name="created_at_relative">10m</string>
     <string name="tweet_id">-1</string>
+    <string name="action_settings">Settings</string>
+    <string name="tweet">Tweet</string>
+    <string name="whats_happening">What\'s happening?</string>
+    <string name="title_activity_profile"></string>
 </resources>

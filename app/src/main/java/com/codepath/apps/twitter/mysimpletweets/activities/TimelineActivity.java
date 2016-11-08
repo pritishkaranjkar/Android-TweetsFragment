@@ -1,132 +1,205 @@
 package com.codepath.apps.twitter.mysimpletweets.activities;
 
-import android.support.v7.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.codepath.apps.twitter.mysimpletweets.TwitterApplication;
-import com.codepath.apps.twitter.mysimpletweets.TwitterClient;
-import com.codepath.apps.twitter.mysimpletweets.adapters.TweetsAdapter;
-import com.codepath.apps.twitter.mysimpletweets.fragments.ComposeTweetFragment;
-import com.codepath.apps.twitter.mysimpletweets.listeners.EndlessScrollListener;
-import com.codepath.apps.twitter.mysimpletweets.models.Tweet;
+import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.twitter.mysimpletweets.R;
+import com.codepath.apps.twitter.mysimpletweets.fragments.ComposeFragment;
+import com.codepath.apps.twitter.mysimpletweets.fragments.HomeTimelineFragment;
+import com.codepath.apps.twitter.mysimpletweets.fragments.MentionsTimelineFragment;
+import com.codepath.apps.twitter.mysimpletweets.models.User;
+import com.codepath.apps.twitter.mysimpletweets.utils.TwitterApplication;
+import com.codepath.apps.twitter.mysimpletweets.utils.TwitterClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.apache.http.Header;
+import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-public class TimelineActivity extends AppCompatActivity implements ComposeTweetFragment.StatusUpdateListener {
-    private TwitterClient client;
-    private TweetsAdapter aTweets;
-    private List<Tweet> tweets;
-    private ListView lvTweets;
-    private SwipeRefreshLayout swipeContainer;
-    private ComposeTweetFragment composeTweetFragment;
+public class TimelineActivity extends AppCompatActivity {
+    TwitterClient client;
+    User user;
+    ViewPager vpPager;
+    TweetsPagerAdapter tweetsPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
+        if(isOnline()){
+            Toast.makeText(this,"You are online!!!!",1000).show();
+
+
+        } else {
+
+            Toast.makeText(this,"You are not online!!!!",1000).show();
+
+        }
+        // get the viewpager
+        vpPager = (ViewPager) findViewById(R.id.viewpager);
+        // set the viewpager adapter
+        tweetsPagerAdapter = new TweetsPagerAdapter(getSupportFragmentManager());
+        vpPager.setAdapter(tweetsPagerAdapter);
+        // find the pager sliding tabstrip
+        PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        // attach the tabstrip to the viewpager
+        tabStrip.setViewPager(vpPager);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+       // getSupportActionBar().setLogo(R.mipmap.logo);
+        getSupportActionBar().setLogo(R.drawable.ic_twitter_logo);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        //getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                composeTweetFragment = new ComposeTweetFragment();
-                composeTweetFragment.show(fragmentManager, "COMPOSE_TWEET");
-                composeTweetFragment.setListener(TimelineActivity.this);
+                showComposeDialog();
             }
         });
 
-        setupSwitchRefreshLayout();
-        lvTweets = (ListView) findViewById(R.id.lvTweets);
-        tweets = new ArrayList<>();
-        aTweets = new TweetsAdapter(this, tweets);
-        lvTweets.setAdapter(aTweets);
-        lvTweets.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                Long sinceId = getOldestTweetId();
-                client.getOlderHomeTimeline(new TwitterClient.TimelineResponseHandler() {
-                    @Override
-                    public void onSuccess(List<Tweet> tweets) {
-                        aTweets.addAll(tweets.isEmpty() ? tweets : tweets.subList(1, tweets.size()));
-                    }
-
-                    @Override
-                    public void onFailure(Throwable error) {
-                        logError(error);
-                    }
-                }, sinceId);
-                return true;
-            }
-        });
         client = TwitterApplication.getRestClient();
-        populateTimeline();
-    }
-
-    private Long getOldestTweetId() {
-        if (tweets.size() == 0) {
-            return 1L;
-        } else {
-            Tweet tweet = tweets.get(tweets.size() - 1);
-            return tweet.getId();
-        }
-    }
-
-    private void populateTimeline() {
-        client.getHomeTimeline(new TwitterClient.TimelineResponseHandler() {
+        // get some account info
+        client.getUserInfo(new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(List<Tweet> tweets) {
-                aTweets.clear();
-                TimelineActivity.this.tweets.addAll(tweets);
-                aTweets.notifyDataSetChanged();
-                swipeContainer.setRefreshing(false);
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", response.toString());
+                user = User.fromJSON(response);
             }
 
             @Override
-            public void onFailure(Throwable error) {
-                swipeContainer.setRefreshing(false);
-                logError(error);
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("DEBUG", errorResponse.toString());
             }
         });
     }
 
-    private void logError(Throwable error) {
-        Log.d("TIMELINE", "Failed to retrieve tweets", error);
-    }
-
-    private void setupSwitchRefreshLayout() {
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                populateTimeline();
-            }
-        });
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-    }
-
+    // Inflate the menu; this adds items to the action bar if it is present.
     @Override
-    public void onStatusUpdated() {
-        if (composeTweetFragment != null) {
-            composeTweetFragment.dismiss();
-        }
-        lvTweets.smoothScrollToPosition(0);
-        populateTimeline();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_timeline, menu);
+        return true;
     }
+
+    // bring up the dialogfragment for composing a new tweet
+    public void showComposeDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        // pass in the URL for the user's profile image
+        ComposeFragment composeFragment = ComposeFragment.newInstance(user.getProfileImageUrl());
+        composeFragment.show(fm, "fragment_compose");
+    }
+
+    public void onProfileView(MenuItem mi) {
+        // launch the profile view
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
+    }
+
+    public void onTweetButtonClicked(String myTweetText) {
+        // when the user composes a new tweet and taps the Tweet button, post it
+        // Switch to the home timeline if not already there
+        if (vpPager.getCurrentItem() != 0) {
+            vpPager.setCurrentItem(0);
+        }
+        HomeTimelineFragment homeTimelineFragment = (HomeTimelineFragment) tweetsPagerAdapter.getRegisteredFragment(0);
+        homeTimelineFragment.postTheNewTweet(myTweetText);
+    }
+
+    // return the order of the fragments in the ViewPager
+    public class TweetsPagerAdapter extends FragmentPagerAdapter {
+        SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+        private String tabTitles[] = {"Home", "Mentions"};
+
+        // adapter gets the manager - insert or remove fragments from activity
+        public TweetsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        // order and creation of fragments within the pager
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                return new HomeTimelineFragment();
+            } else if (position == 1) {
+                return new MentionsTimelineFragment();
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            registeredFragments.put(position, fragment);
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+
+        public Fragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
+        }
+
+        // returns the tab title
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return tabTitles[position];
+        }
+
+        // how many fragments there are to swipe between
+        @Override
+        public int getCount() {
+            return tabTitles.length;
+        }
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
+    }
+
+
+
 }
