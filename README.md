@@ -28,3 +28,6 @@ The following **optional** advanced user stories are completed :
 
 ![Video Walkthrough](TweetsFragment.gif)
 ![Video Walkthrough](TweetsFragment1.gif)
+
+
+## Missed showing the feature "User can click on the profile image in any tweet to see another user's profile" in the first gif so uploaded second.
