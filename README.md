@@ -22,6 +22,7 @@ The following **optional** advanced user stories are completed :
 * [X] User can click on a tweet to be taken to a "detail view" of that tweet (1 point)
 * [X] Improve the user interface and theme the app to feel "twitter branded" (1 to 5 points)
 * [X] Robust error handling, check if internet is available, handle error cases, network failures (1 point)
+* [X] When a network request is sent, user sees an indeterminate progress indicator (1 point)
 
 ## Video Walkthrough 
 
