@@ -1,4 +1,4 @@
-# MySimpleTweets
+# TweetsFragment
 
 Time spent: 8 hours
 
