@@ -1,6 +1,6 @@
 # MySimpleTweets
 
-Time spent: 12 hours
+Time spent: 8 hours
 
 ## User Stories
 
@@ -24,4 +24,5 @@ The following **optional** advanced user stories are completed :
 
 ## Video Walkthrough 
 
-![Video Walkthrough](Tweets1.gif)
+![Video Walkthrough](TweetsFragment.gif)
+![Video Walkthrough](TweetsFragment1.gif)
